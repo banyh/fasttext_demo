@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}比較word vector{% endblock %}
+
+{% block body %}
+<h3>
+    輸入一個中文詞
+</h3><br />
+{% csrf_token %}
+<textarea id="word" rows="1" cols="30"></textarea>
+<button type="button" id="submit">Submit</button>
+
+<div id="target"></div>
+{% endblock %}
+
+
+{% block scripts %}
+<script type="text/javascript">
+display_comparison = function(data) {
+    $( "#target" ).empty();
+    var content = "<table border='1'>";
+    content += "<tr><th colspan=2>Word2Vec</th>";
+    content += "<th colspan=2>FastText (ngram=1~6)</th>";
+    content += "<th colspan=2>FastText (ngram=2~6)</th>";
+    content += "<th colspan=2>FastText (ngram=3~6)</th></tr>";
+    for (i = 0; i < data.data.length; i++) {
+        content += "<tr><td>" + data.data[i][0] + "</td>";
+        content += "<td>" + data.data[i][1] + "</td>";
+        content += "<td>" + data.data[i][2] + "</td>";
+        content += "<td>" + data.data[i][3] + "</td>";
+        content += "<td>" + data.data[i][4] + "</td>";
+        content += "<td>" + data.data[i][5] + "</td>";
+        content += "<td>" + data.data[i][6] + "</td>";
+        content += "<td>" + data.data[i][7] + "</td></tr>";
+    }
+    content += "</table>";
+    $( "#target" ).append( content );
+};
+$( "#submit" ).click(function() {
+    $.post(
+        "/similarity/",
+        {word: $( "#word" ).val()},
+        display_comparison
+    );
+});
+</script>
+{% endblock %}
